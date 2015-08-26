@@ -1,0 +1,93 @@
+C51 COMPILER V9.00   PWM                                                                   07/31/2015 00:57:57 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE PWM
+OBJECT MODULE PLACED IN ..\OUT\pwm.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE ..\SRC\pwm.c BROWSE INCDIR(..\INC;..\SRC) DEBUG OBJECTEXTEND PRINT(..\LISTI
+                    -NG\pwm.lst) OBJECT(..\OUT\pwm.obj)
+
+line level    source
+
+   1          #include "main.h"
+   2          
+   3          #include "pwm.h"
+   4          
+   5          /*---------------------------------------------------------------*-
+   6           * PWM0_Init(void)
+   7           * 
+   8           * Initialization function for PWM library
+   9          -*---------------------------------------------------------------*/
+  10          void PWM0_Init(void)
+  11          {
+  12   1              CCON = 0;               // Clears interrupt flag
+  13   1              CMOD = 0x02;    // Sets PCA timer clock source as FOSC/2
+  14   1              CL = 0;                 // Resets PCA base timer
+  15   1              CH = 0;
+  16   1      
+  17   1              CCAPM0 = 0x42;  // PCA moudle 0 works in 8-bit PWM mode
+  18   1              CCAP0L = 0x00;
+  19   1              CCAP0H = 0x00;
+  20   1      
+  21   1              CR = 1;                 // Starts PCA
+  22   1      }
+  23          
+  24          
+  25          /*---------------------------------------------------------------*-
+  26           * PWM0_set()
+  27           * 
+  28           * Set the duty cycle 
+  29           * NOTE: duty cycle = *DUTY* / 255
+  30          -*---------------------------------------------------------------*/
+  31          void PWM0_Set(unsigned char DUTY)
+  32          {
+  33   1              CCAP0L = 255 - DUTY;
+  34   1              CCAP1H = 255 - DUTY;
+  35   1      }
+  36          
+  37          /*---------------------------------------------------------------*-
+  38           * PWM1_Init(void)
+  39           * 
+  40           * Initialization function for PWM library
+  41          -*---------------------------------------------------------------*/
+  42          void PWM1_Init(void)
+  43          {
+  44   1              CCON = 0;               // Clears interrupt flag
+  45   1              CMOD = 0x02;    // Sets PCA timer clock source as FOSC/2
+  46   1              CL = 0;                 // Resets PCA base timer
+  47   1              CH = 0;
+  48   1      
+  49   1              CCAPM1 = 0x42;  // PCA moudle 0 works in 8-bit PWM mode
+  50   1              CCAP1L = 0x00;
+  51   1              CCAP1H = 0x00;
+  52   1      
+  53   1              CR = 1;                 // Starts PCA
+  54   1      }
+C51 COMPILER V9.00   PWM                                                                   07/31/2015 00:57:57 PAGE 2   
+
+  55          
+  56          
+  57          /*---------------------------------------------------------------*-
+  58           * PWM1_set()
+  59           * 
+  60           * Set the duty cycle 
+  61           * NOTE: duty cycle = *DUTY* / 255
+  62          -*---------------------------------------------------------------*/
+  63          void PWM1_Set(unsigned char DUTY)
+  64          {
+  65   1              CCAP1L = 255 - DUTY;
+  66   1              CCAP1H = 255 - DUTY;
+  67   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     58    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

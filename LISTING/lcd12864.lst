@@ -1,0 +1,108 @@
+C51 COMPILER V9.00   LCD12864                                                              07/31/2015 00:57:56 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE LCD12864
+OBJECT MODULE PLACED IN ..\OUT\lcd12864.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE ..\SRC\lcd12864.c BROWSE INCDIR(..\INC;..\SRC) DEBUG OBJECTEXTEND PRINT(..\
+                    -LISTING\lcd12864.lst) OBJECT(..\OUT\lcd12864.obj)
+
+line level    source
+
+   1          #include "main.h"
+   2          #include "timeout.h"
+   3          #include "port.h"
+   4          
+   5          #include "lcd12864.h"
+   6          
+   7          
+   8          /*---------------------------------------------------------------*-
+   9           * LCD12864_Init()
+  10           * 
+  11           * Initialization function for LCD12864 library 
+  12          -*---------------------------------------------------------------*/
+  13          void LCD12864_Init(void)
+  14          {
+  15   1              LCD12864_PSB = 1;
+  16   1      
+  17   1              LCD12864_Write_CMD(BASIC_INSTRUCTION_SET);      
+  18   1              Delay_5ms();
+  19   1              LCD12864_Write_CMD(DISPLAY_CURSOR);     
+  20   1              Delay_5ms();
+  21   1              LCD12864_Write_CMD(CLEAR_DISPLAY);
+  22   1              Delay_5ms();
+  23   1      }
+  24          
+  25          
+  26          /*---------------------------------------------------------------*-
+  27           * LCD12864_Write_CMD()
+  28           * 
+  29           * Write instruction
+  30          -*---------------------------------------------------------------*/
+  31          void LCD12864_Write_CMD(unsigned char CMD)
+  32          {
+  33   1              LCD12864_RS = 0;
+  34   1              LCD12864_RW = 0;
+  35   1              LCD12864_EN = 0;
+  36   1              LCD12864_port = CMD;
+  37   1              Delay_5ms();
+  38   1              LCD12864_EN = 1;
+  39   1              Delay_5ms();
+  40   1              LCD12864_EN = 0;
+  41   1      }
+  42          
+  43          
+  44          /*---------------------------------------------------------------*-
+  45           * LCD12864_Write_Data()
+  46           * 
+  47           * Write data into display data RAM
+  48          -*---------------------------------------------------------------*/
+  49          void LCD12864_Write_Data(unsigned char DATA)
+  50          {
+  51   1              LCD12864_RS = 1;
+  52   1              LCD12864_RW = 0;
+  53   1              LCD12864_EN = 0;
+  54   1              LCD12864_port = DATA;
+C51 COMPILER V9.00   LCD12864                                                              07/31/2015 00:57:56 PAGE 2   
+
+  55   1              Delay_5ms();
+  56   1              LCD12864_EN = 1;
+  57   1              Delay_5ms();
+  58   1              LCD12864_EN = 0;
+  59   1      }
+  60          
+  61          
+  62          /*---------------------------------------------------------------*-
+  63           * LCD12864_Locate()
+  64           * 
+  65           * Locate the display position
+  66          -*---------------------------------------------------------------*/
+  67          void LCD12864_Locate(unsigned char X, unsigned char Y)
+  68          {
+  69   1              unsigned char pos;
+  70   1              if (X == 0) {
+  71   2                      X = 0x80;
+  72   2              } else if (X == 1) {
+  73   2                      X = 0x90;
+  74   2              } else if (X == 2) {
+  75   2                      X = 0x88;
+  76   2              } else if (X == 3) {
+  77   2                      X = 0x98;
+  78   2              }
+  79   1      
+  80   1              pos = X + Y;
+  81   1              LCD12864_Write_CMD(pos);
+  82   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     96    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,101 @@
+C51 COMPILER V9.00   HC_SR04                                                               07/31/2015 00:57:56 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE HC_SR04
+OBJECT MODULE PLACED IN ..\OUT\hc_sr04.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE ..\SRC\hc_sr04.c BROWSE INCDIR(..\INC;..\SRC) DEBUG OBJECTEXTEND PRINT(..\L
+                    -ISTING\hc_sr04.lst) OBJECT(..\OUT\hc_sr04.obj)
+
+line level    source
+
+   1          #include "main.h"
+   2          #include "timeout.h"
+   3          #include "port.h"
+   4          
+   5          #include "hc_sr04.h"
+   6          
+   7          // ------ Private function prototypes ---------------------
+   8          
+   9          static void HC_SR04_Trigger(void);
+  10          
+  11          /*---------------------------------------------------------------*-
+  12           * HC_SR04_Init()
+  13           * 
+  14           * Initialization function for HC_SR04 library
+  15          -*---------------------------------------------------------------*/
+  16          void HC_SR04_Init(void)
+  17          {
+  18   1              Echo_pin = 1;   // Sets Echo pin as input for receiving echo
+  19   1              Trig_pin = 0;   // Sets Trig pin as output for sending tirgger
+  20   1              TMOD = 0x10;    // Sets timer 1 as mode 1 16-bit timer
+  21   1              EA  = 1;
+  22   1              ET1 = 1;
+  23   1              TR1 = 0;
+  24   1              TF1 = 0;
+  25   1      }
+  26          
+  27          
+  28          /*---------------------------------------------------------------*-
+  29           * HC_SR04_Trigger()
+  30           * 
+  31           * Gives 20us width for the trigger pulse
+  32          -*---------------------------------------------------------------*/
+  33          void HC_SR04_Trigger(void)
+  34          {
+  35   1              Trig_pin = 1;   // Starts the trigger pulse
+  36   1              Delay_10us();
+  37   1              Delay_10us();   
+  38   1              Trig_pin = 0;   // ends the trigger pulse
+  39   1      }
+  40          
+  41          
+  42          /*---------------------------------------------------------------*-
+  43           * HC_SR04_Get_Distance()
+  44           * 
+  45           * Returns the data measured by sensor
+  46           * NOTE: the value is 10 x magnification than the original
+  47           * e.g.  original         return value
+  48           *           12.3cm           123cm
+  49          -*---------------------------------------------------------------*/
+  50          unsigned int
+  51          HC_SR04_Get_Distance(void)
+  52          {
+  53   1              unsigned int time, distance;
+  54   1              // Prepares for measuring hight input IO duration
+C51 COMPILER V9.00   HC_SR04                                                               07/31/2015 00:57:56 PAGE 2   
+
+  55   1              TH1 = 0;
+  56   1              TL1 = 0;
+  57   1              TF1 = 0;
+  58   1              
+  59   1              HC_SR04_Trigger();
+  60   1              while (!Echo_pin)
+  61   1                      ;
+  62   1              TR1 = 1;        // Starts timer 1
+  63   1              while (Echo_pin)
+  64   1                      ;
+  65   1              TR1 = 0;        // Ends timer 1
+  66   1      
+  67   1              if (TF1) {
+  68   2                      distance = 9999;
+  69   2              } else {
+  70   2                      time = TH1 * 256 + TL1;
+  71   2                      //distance = time * 344 / 2 / 1000000 * 100; // (cm)
+  72   2                      distance = time *  0.172 + 0.5;         // 10 x magnification
+  73   2              }
+  74   1              return distance;
+  75   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    111    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       2
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,113 @@
+C51 COMPILER V9.00   UART                                                                  07/31/2015 00:57:57 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE UART
+OBJECT MODULE PLACED IN ..\OUT\uart.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE ..\SRC\uart.c BROWSE INCDIR(..\INC;..\SRC) DEBUG OBJECTEXTEND PRINT(..\LIST
+                    -ING\uart.lst) OBJECT(..\OUT\uart.obj)
+
+line level    source
+
+   1          #include "main.h"
+   2          
+   3          #include "uart.h"
+   4          
+   5          // ------ Private variable definitions --------------------
+   6          
+   7          static bit busy = 0;
+   8          
+   9          /*---------------------------------------------------------------*-
+  10           * UART1_Init()
+  11           * 
+  12           * Initialization function for UART1 library
+  13          -*---------------------------------------------------------------*/
+  14          void UART1_Init()
+  15          {
+  16   1              AUXR |= 0x04;   // Baudrate generator works in 1T mode
+  17   1              SCON  = 0x50;   // 8-bit variable UART
+  18   1              AUXR |= 0x01;   // Sets S1BRS bit
+  19   1              BRT   = 0xFD;
+  20   1                                              // Sets auto-reload value of baudrate generator
+  21   1              PCON &= 0x7F;
+  22   1              AUXR |= 0x10;   // Enable independent baudrate generator
+  23   1      }
+  24          
+  25          
+  26          /*---------------------------------------------------------------*-
+  27           * UART2_Init()
+  28           * 
+  29           * Initialization function for UART2 library
+  30          -*---------------------------------------------------------------*/
+  31          void UART2_Init()
+  32          {
+  33   1              S2CON = 0x50;   // 8-bit variable UART
+  34   1              AUXR |= 0x04;   // Baudrate generator works in 1T mode
+  35   1              BRT   = 0xFD;
+  36   1                                              // Sets auto-reload value of baudrate generator
+  37   1              AUXR |= 0x10;   // Enable independent baudrate generator
+  38   1              IE2  |= 0x01;   // Enable UART2 interrupt
+  39   1              EA    = 1;              // Open master interrupt switch
+  40   1      }
+  41          
+  42          
+  43          void UART2() interrupt 8 using 1
+  44          {
+  45   1              if (S2CON & S2RI) {
+  46   2                      S2CON &= ~S2RI;
+  47   2                      // Something to do
+  48   2              }
+  49   1              if (S2CON & S2TI) {
+  50   2                      S2CON &= ~S2TI;
+  51   2                      busy = 0;
+  52   2              }
+  53   1      }
+  54          
+C51 COMPILER V9.00   UART                                                                  07/31/2015 00:57:57 PAGE 2   
+
+  55          void UART1_Send_Char(unsigned char CHAR)
+  56          {
+  57   1              SBUF = CHAR;
+  58   1              while (!TI)
+  59   1                      ;
+  60   1              TI = 0;
+  61   1      }
+  62          
+  63          void UART2_Send_Char(unsigned char CHAR)
+  64          {
+  65   1              while (busy)
+  66   1                      ;
+  67   1      
+  68   1              busy = 1;
+  69   1              S2BUF = CHAR;
+  70   1      }
+  71          
+  72          void UART1_Send_String(unsigned char *STR)
+  73          {
+  74   1              while (*STR != '\0') {
+  75   2                      UART1_Send_Char(*STR);
+  76   2                      STR++;
+  77   2              }
+  78   1      }
+  79          
+  80          void UART2_Send_String(unsigned char *STR)
+  81          {
+  82   1              while (*STR != '\0') {
+  83   2                      UART2_Send_Char(*STR);
+  84   2                      STR++;
+  85   2              }
+  86   1      }
+  87          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    114    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      1    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
